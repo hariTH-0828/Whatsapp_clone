@@ -1,0 +1,12 @@
+/* 
+  Localizable.strings
+  Whatsapp_clone
+
+  Created by Hariharan R S on 25/07/24.
+  
+*/
+
+"updates" = "Updates";
+"updates.channel" = "Channels";
+"updates.nochannel" = "Stay updated on topics that matter to you. Find channels to follow below.";
+"updates.follow" = "Find channels to follow";
