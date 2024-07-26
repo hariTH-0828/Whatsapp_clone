@@ -28,6 +28,7 @@
 		52FA30E52C52580600C9CED2 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FA30E42C52580600C9CED2 /* Channel.swift */; };
 		52FA30E82C525CAE00C9CED2 /* UpdatesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FA30E72C525CAE00C9CED2 /* UpdatesViewModel.swift */; };
 		52FA30EB2C525FF100C9CED2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 52FA30E92C525FF100C9CED2 /* Localizable.strings */; };
+		52FA30ED2C5374D200C9CED2 /* ChannelListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FA30EC2C5374D200C9CED2 /* ChannelListCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,7 @@
 		52FA30E42C52580600C9CED2 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
 		52FA30E72C525CAE00C9CED2 /* UpdatesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesViewModel.swift; sourceTree = "<group>"; };
 		52FA30EA2C525FF100C9CED2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		52FA30EC2C5374D200C9CED2 /* ChannelListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelListCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +195,7 @@
 			isa = PBXGroup;
 			children = (
 				52FA307B2C4A743C00C9CED2 /* UpdatesView.swift */,
+				52FA30EC2C5374D200C9CED2 /* ChannelListCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -354,6 +357,7 @@
 				52FA309F2C4FE9C400C9CED2 /* User.swift in Sources */,
 				52FA30E52C52580600C9CED2 /* Channel.swift in Sources */,
 				52FA307F2C4A745900C9CED2 /* ChatsView.swift in Sources */,
+				52FA30ED2C5374D200C9CED2 /* ChannelListCell.swift in Sources */,
 				52FA30E82C525CAE00C9CED2 /* UpdatesViewModel.swift in Sources */,
 				52FA307C2C4A743C00C9CED2 /* UpdatesView.swift in Sources */,
 				52FA30912C4E3DEB00C9CED2 /* StyleManager.swift in Sources */,

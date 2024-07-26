@@ -9,6 +9,7 @@ import SwiftUI
 
 struct UpdatesView: View {
     @StateObject private var viewModel: UpdatesViewModel = UpdatesViewModel()
+    @State private var followedChannels = [Channel]()
     
     var body: some View {
         NavigationStack {
@@ -17,25 +18,12 @@ struct UpdatesView: View {
                 
                 ChannelTitleView()
                     .padding(.top)
-               
-                Section {
-                    ForEach(viewModel.allChannels, id: \.id) { channel in
-                        ChannelListCell(channel)
-                    }
-                } header: {
-                    VStack {
-                        Text("updates.follow")
-                            .font(.footnote).bold()
-                            .foregroundStyle(Color(.darkGray))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .padding()
-                    .padding(.leading, 8)
-                }
+                
+                ChannelSuggestion()
             }
             .navigationTitle("updates")
             .searchable(text: $viewModel.searchText)
-            .scrollIndicators(.never)
+            .environmentObject(viewModel)
             .toolbar(content: {
                 ToolbarItem(placement: .topBarLeading) {
                     Menu {
@@ -54,6 +42,13 @@ struct UpdatesView: View {
                             .defaultTabBarIcon()
                     }
 
+                }
+            })
+            .onReceive(viewModel.$allChannels, perform: { channels in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    withAnimation(.snappy) {
+                        followedChannels = viewModel.allChannels.filter({ $0.isFollowed == true})
+                    }
                 }
             })
         }
@@ -94,18 +89,18 @@ struct UpdatesView: View {
     @ViewBuilder
     private func ChannelTitleView() -> some View {
         HStack {
-            Text("updates.channel")
+            Text("updates.channel") 
                 .font(.title3).bold()
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 22)
             
             Spacer()
             
-            if !viewModel.followedChannels.isEmpty {
+            if !viewModel.allChannels.allSatisfy({$0.isFollowed == false}) {
                 Text("Explore")
-                    .font(.callout)
+                    .font(.system(.footnote, weight: .semibold))
                     .padding(.horizontal, 10)
-                    .frame(height: 30)
+                    .frame(height: 26)
                     .background(
                         Capsule()
                             .fill(.regularMaterial)
@@ -115,14 +110,15 @@ struct UpdatesView: View {
         }
         
         VStack {
-            if viewModel.followedChannels.isEmpty {
+            if viewModel.allChannels.allSatisfy({$0.isFollowed == false}) {
                 Text("updates.nochannel")
                     .foregroundStyle(Color(.secondaryLabel))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 22)
             }else {
-                ForEach(viewModel.followedChannels, id: \.id) { channel in
-                    ChannelListCell(channel)
+                /// List All Followed Channels
+                ForEach(followedChannels, id: \.self) { channel in
+                    ChannelListCell(channel: channel)
                 }
             }
         }
@@ -130,49 +126,37 @@ struct UpdatesView: View {
     }
     
     @ViewBuilder
-    private func ChannelListCell(_ channel: Channel) -> some View {
-        VStack(alignment: .leading) {
-            HStack(spacing: 12) {
-                Image(channel.image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 62, height: 62)
-                    .clipShape(.circle)
-                
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack(spacing: 5) {
-                        Text(channel.channelName)
-                            .font(.headline).bold()
-                        
-                        if channel.verifiedChannel {
-                            Image(.verifyBadge)
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                        }
-                    }
-                    
-                    Text("\(channel.channelFollowers) followers")
-                        .font(.callout)
-                        .foregroundStyle(Color(.secondaryLabel))
+    private func ChannelSuggestion() -> some View {
+        Section {
+            ForEach((viewModel.getAllChannelAsList().prefix(5)).indices, id: \.self) { index in
+                ChannelListCell(channel: viewModel.getAllChannelAsList()[index])
+                if index != 4 {
+                    Divider()
+                        .offset(x: 90)
                 }
-                
-                Spacer()
-                
-                Button(action: {
-                    if !channel.isFollowed {
-                        viewModel.addToFollowed(channel)
-                    }else { viewModel.unfollow(id: channel.id) }
-                    
-                }, label: {
-                    Text(channel.isFollowed ? "Following" :  "Follow")
-                        .defaultButtonStyle()
-                })
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
             
-            Divider()
-                .offset(x: 90)
+            Button(action: {}, label: {
+                Text("Explore more")
+                    .foregroundStyle(.background)
+                    .frame(height: 35)
+                    .padding(.horizontal)
+                    .background(
+                        Capsule()
+                            .fill(StyleManager.colorStyle.appColor)
+                    )
+            })
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+        } header: {
+            VStack {
+                Text("updates.follow")
+                    .font(.footnote).bold()
+                    .foregroundStyle(Color(.darkGray))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding()
+            .padding(.leading, 8)
         }
     }
 }
@@ -191,7 +175,7 @@ struct ProfileImageWithStatus: View {
             Image(.imageOne)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 65, height: 65)
+                .frame(width: 60, height: 60)
                 .clipShape(.circle)
                 .padding(4)
                 .overlay {
@@ -221,4 +205,11 @@ struct ProfileImageWithStatus: View {
 
 #Preview {
     UpdatesView()
+}
+
+
+extension Set {
+    func firstRange(of count: Int) -> ArraySlice<Element> {
+        return Array(self.prefix(count))[0..<Swift.min(count, self.count)]
+    }
 }

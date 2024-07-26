@@ -81,16 +81,23 @@ private struct OnScrollingChangeViewModifier: ViewModifier {
 }
 
 private struct DefaultButtonStyle: ViewModifier {
+    var selected: Bool
+    var height: CGFloat
+    
+    init(selected: Bool, height: CGFloat) {
+        self.selected = selected
+        self.height = height
+    }
     
     func body(content: Content) -> some View {
         content
-            .font(.system(.callout, weight: .semibold))
-            .foregroundStyle(StyleManager.colorStyle.chipForeground)
-            .frame(height: 30)
-            .padding(.horizontal)
+            .font(.system(.footnote, weight: .semibold))
+            .foregroundStyle(selected ? StyleManager.colorStyle.chipForeground : Color(uiColor: .darkGray))
+            .frame(height: height)
+            .padding(.horizontal, 10)
             .background(
                 Capsule()
-                    .fill(StyleManager.colorStyle.chipBackground)
+                    .fill(selected ? StyleManager.colorStyle.chipBackground : StyleManager.colorStyle.chipUnselectBackground)
             )
     }
 }
@@ -110,7 +117,7 @@ extension View {
             self.modifier(OnScrollingChangeViewModifier(scrollingChangeThreshold: scrollingChangeThreshold, scrollingStopThreshold: scrollingStopThreshold, onScrollingDown: onScrollingDown, onScrollingUp: onScrollingUp, onScrollingStopped: onScrollingStopped))
         }
     
-    func defaultButtonStyle() -> some View {
-        modifier(DefaultButtonStyle())
+    func defaultButtonStyle(isSelected: Bool, _ height: CGFloat = 26) -> some View {
+        modifier(DefaultButtonStyle(selected: isSelected, height: height))
     }
 }

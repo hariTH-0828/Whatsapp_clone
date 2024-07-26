@@ -24,21 +24,7 @@ struct ChipViewBuilder: View {
             }
         }, label: {
             Text(tab.rawValue)
-                .foregroundStyle(tab == selection ? StyleManager.colorStyle.chipForeground : Color(uiColor: .darkGray))
-                .font(.footnote).bold()
-                .padding(.horizontal)
-                .frame(height: 32)
-                .background {
-                    if selection == tab {
-                        Capsule()
-                            .fill(StyleManager.colorStyle.chipBackground)
-                            .matchedGeometryEffect(id: "ACTIVECHIP", in: animate)
-                    }else {
-                        Capsule()
-                            .fill(StyleManager.colorStyle.chipUnselectBackground)
-                            .matchedGeometryEffect(id: "ACTIVECHIP", in: animate)
-                    }
-                }
+                .defaultButtonStyle(isSelected: tab == selection, 32)
         })
         .buttonStyle(PlainButtonStyle())
     }
