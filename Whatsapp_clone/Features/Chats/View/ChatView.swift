@@ -7,108 +7,93 @@
 
 import SwiftUI
 
-enum Filters: String, CaseIterable {
-    case all = "All"
-    case unread = "Unread"
-    case favourite = "Favourites"
-    case group = "Groups"
-    
-    var searchPrompt: String {
-        switch self {
-        case .all:
-            return "Search"
-        case .favourite:
-            return "Search favourite chat"
-        case .group:
-            return "Search group chat"
-        case .unread:
-            return "Search unread chat"
-        }
-    }
-}
-
 struct ChatView: View {
     @StateObject var viewModel: ChatViewModel = ChatViewModel()
     @State private var searchText: String = ""
     @State private var selectedFilter: Filters = .all
     @State private var showMoreUserInfo: Bool = false
+    @State private var navigateToChat: Bool = false
+    @State private var selectedUser: UserData?
     
     var body: some View {
         NavigationStack {
-            VStack {
-                List {
-                    HStack(spacing: 6, content: {
-                        ForEach(Filters.allCases, id: \.self) { filter in
-                            ChipViewBuilder(tab: filter, selection:  $selectedFilter)
-                        }
-                    })
-                    .listRowSeparator(.hidden)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    
-                    ForEach(viewModel.users, id: \.name) { user in
-                        ChatListView(user: user)
-                            .swipeActions(edge: .trailing) {
-                                Button(action: {}, label: {
-                                    archiveboxIcon
-                                        .foregroundStyle(StyleManager.colorStyle.backgroundColor)
-                                })
-                                .tint(StyleManager.colorStyle.appColor)
-                                
-                                Button(action: {
-                                    viewModel.getMoreUserInfo(user)
-                                    showMoreUserInfo.toggle()
-                                }, label: {
-                                    moreIcon
-                                        .foregroundStyle(.white)
-                                })
-                                .tint(Color(.tertiaryLabel))
-                            }
-                    }
-                }
+            List {
+                FilterChips(selectedFilter: $selectedFilter)
+                UserListView(viewModel: viewModel,
+                             navigateToChat: $navigateToChat,
+                             showMoreUserInfo: $showMoreUserInfo,
+                             selectedUser: $selectedUser)
             }
             .listStyle(.plain)
             .listSectionSeparator(.hidden)
             .listSectionSeparatorTint(.clear)
             .navigationTitle("Chats")
             .searchable(text: $searchText, prompt: selectedFilter.searchPrompt)
-            .toolbar(content: {
-                ToolbarItem(placement: .topBarLeading) {
-                    Menu {
-                        Button("Select chat", systemImage: "checkmark.circle", action: {})
-                    } label: {
-                        Image(.icoMeetball)
-                            .renderingMode(.template)
-                            .defaultTabBarIcon()
-                    }
-                }
-
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {}, label: {
-                        Image(.icoCamera)
-                            .renderingMode(.template)
-                            .resizable()
-                            .defaultTabBarIcon()
-                    })
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {}, label: {
-                        Image(.icoPlus)
-                            .renderingMode(.template)
-                            .defaultTabBarIcon(bgColor: .green)
-                    })
-                }
-            })
+            .toolbar(content: toolbarContent)
             .sheet(isPresented: $showMoreUserInfo, content: {
-                MoreUserInfoBottomView(user: viewModel.moreUserInfo)
+                MoreUserInfoBottomView(user: viewModel.selectedUser)
                     .presentationDetents([.height(480)])
             })
+            .navigationDestination(item: $selectedUser) { user in
+                Text("\(user.name) chat list")
+            }
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private func toolbarContent() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Menu {
+                Button("Select chat", systemImage: "checkmark.circle", action: {})
+            } label: {
+                Image(.icoMeetball)
+                    .renderingMode(.template)
+                    .defaultTabBarIcon()
+            }
+        }
+
+        ToolbarItem(placement: .topBarTrailing) {
+            Button(action: {}, label: {
+                Image(.icoCamera)
+                    .renderingMode(.template)
+                    .resizable()
+                    .defaultTabBarIcon()
+            })
+        }
+        
+        ToolbarItem(placement: .topBarTrailing) {
+            Button(action: {}, label: {
+                Image(.icoPlus)
+                    .renderingMode(.template)
+                    .defaultTabBarIcon(bgColor: .green)
+            })
+        }
+    }
+}
+
+fileprivate struct UserListView: View {
+    @ObservedObject var viewModel: ChatViewModel
+    @Binding var navigateToChat: Bool
+    @Binding var showMoreUserInfo: Bool
+    @Binding var selectedUser: UserData?
+    
+    var body: some View {
+        ForEach(viewModel.users, id: \.self) { user in
+            Button(action: {
+                viewModel.setSelected(user: user)
+                self.selectedUser = viewModel.selectedUser
+                navigateToChat.toggle()
+            }, label: {
+                ChatListView(user: user)
+            })
+            .swipeActions(edge: .trailing) {
+                swipeActionButtons(for: user)
+            }
         }
     }
     
     @ViewBuilder
-    func swipeActionButtons() -> some View {
+    func swipeActionButtons(for user: UserData) -> some View {
         Button(action: {}, label: {
             archiveboxIcon
                 .foregroundStyle(StyleManager.colorStyle.backgroundColor)
@@ -116,53 +101,13 @@ struct ChatView: View {
         .tint(StyleManager.colorStyle.appColor)
         
         Button(action: {
+            viewModel.setSelected(user: user)
             showMoreUserInfo.toggle()
         }, label: {
             moreIcon
                 .foregroundStyle(.white)
         })
         .tint(Color(.tertiaryLabel))
-    }
-}
-
-fileprivate struct ChatListView: View {
-    let user: UserData
-    
-    init(user: UserData) {
-        self.user = user
-    }
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(user.profilePicture)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 55, height: 55)
-                .clipShape(.circle)
-            
-            VStack(alignment: .leading) {
-                HStack {
-                    /// Username
-                    Text(user.name)
-                        .foregroundStyle(StyleManager.colorStyle.primary)
-                        .font(.headline)
-                    
-                    Spacer()
-                    
-                    /// Last Message Time
-                    Text(user.message.messageTime)
-                        .foregroundStyle(Color(.secondaryLabel))
-                        .font(.system(.footnote, design: .default, weight: .light))
-                }
-                
-                Text(user.message.message)
-                    .lineLimit(2)
-                    .foregroundStyle(Color(.secondaryLabel))
-                    .font(.footnote)
-                    .padding(.trailing)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
 }
 

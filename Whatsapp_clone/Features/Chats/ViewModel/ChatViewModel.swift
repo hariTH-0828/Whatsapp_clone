@@ -10,7 +10,7 @@ import Foundation
 
 class ChatViewModel: ObservableObject {
     @Published var users: [UserData] = []
-    @Published private(set) var moreUserInfo: UserData? = nil
+    @Published private(set) var selectedUser: UserData? = nil
     
     init() {
         initiateUsers()
@@ -62,7 +62,7 @@ class ChatViewModel: ObservableObject {
         self.users = [balasuriya, aarthi, ramachandran, vengatesh, shalini, vignesh]
     }
     
-    func getMoreUserInfo(_ user: UserData) {
-        self.moreUserInfo = user
+    func setSelected(user: UserData) {
+        self.selectedUser = user
     }
 }

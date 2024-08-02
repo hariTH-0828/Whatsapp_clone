@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserData {
+struct UserData: Hashable {
     let name: String
     let profilePicture: String
     let phoneNumber: String
@@ -17,6 +17,14 @@ struct UserData {
     
     static func defaultValue() -> UserData {
         UserData(name: "", profilePicture: "", phoneNumber: "", about: About(about: "", lastUpdateAt: ""), message: Message(message: "", messageTime: "", isReaded: false), status: Status(isStatusAvailable: false))
+    }
+    
+    static func == (lhs: UserData, rhs: UserData) -> Bool {
+        return lhs.name == rhs.name
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
     }
 }
 
