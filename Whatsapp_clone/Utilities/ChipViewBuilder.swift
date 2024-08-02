@@ -10,7 +10,6 @@ import SwiftUI
 struct ChipViewBuilder: View {
     private var tab: Filters
     @Binding private var selection: Filters
-    @Namespace private var animate
     
     init(tab: Filters, selection: Binding<Filters>) {
         self.tab = tab

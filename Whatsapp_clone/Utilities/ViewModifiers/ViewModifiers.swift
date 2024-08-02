@@ -92,12 +92,12 @@ private struct DefaultButtonStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.system(.footnote, weight: .semibold))
-            .foregroundStyle(selected ? StyleManager.colorStyle.chipForeground : Color(uiColor: .darkGray))
+            .foregroundStyle(selected ? StyleManager.colorStyle.chipForeground : Color(uiColor: .lightGray))
             .frame(height: height)
             .padding(.horizontal, 10)
             .background(
                 Capsule()
-                    .fill(selected ? StyleManager.colorStyle.chipBackground : StyleManager.colorStyle.chipUnselectBackground)
+                    .fill(selected ? StyleManager.colorStyle.chipBackground : Color(.tertiarySystemBackground))
             )
     }
 }

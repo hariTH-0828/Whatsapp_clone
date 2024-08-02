@@ -21,6 +21,7 @@ protocol ColorStyleProtocol{
     var chipBackground: Color { get }
     var chipUnselectBackground: Color { get }
     var appColor: Color { get }
+    var closeGray: Color { get }
 }
 
 struct StyleManager {
@@ -95,6 +96,10 @@ struct Colors: ColorStyleProtocol {
     
     var appColor: Color {
         return Color(uiColor: UIColor(red: CGFloat(0x1D) / 255, green: CGFloat(0xAB) / 255, blue: CGFloat(0x61) / 255, alpha: 1))
+    }
+    
+    var closeGray: Color {
+        return Color(uiColor: UIColor(red: CGFloat(0x95) / 255, green: CGFloat(0x93) / 255, blue: CGFloat(0x94) / 255, alpha: 1))
     }
 }
 

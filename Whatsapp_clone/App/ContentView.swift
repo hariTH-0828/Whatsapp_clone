@@ -95,7 +95,7 @@ struct ContentView: View {
                         )
                     }.tag(Tab.communities)
                 
-                ChatsView()
+                ChatView()
                     .tabItem {
                         Label(
                             title: { Text(Tab.chats.tabName) },

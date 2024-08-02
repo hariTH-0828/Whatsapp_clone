@@ -27,7 +27,7 @@ enum Filters: String, CaseIterable {
     }
 }
 
-struct ChatListView: View {
+struct ChatView: View {
     @StateObject var viewModel: ChatViewModel = ChatViewModel()
     @State private var searchText: String = ""
     @State private var selectedFilter: Filters = .all

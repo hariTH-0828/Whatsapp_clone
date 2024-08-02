@@ -9,15 +9,30 @@ import Foundation
 
 struct UserData {
     let name: String
-    let lastMessageTime: String
-    let isStatusAvailable: Bool
-    let statusCount: Int
-    let isStatusViewed: Bool
+    let profilePicture: String
+    let phoneNumber: String
+    let about: About
+    let message: Message
+    let status: Status
+    
+    static func defaultValue() -> UserData {
+        UserData(name: "", profilePicture: "", phoneNumber: "", about: About(about: "", lastUpdateAt: ""), message: Message(message: "", messageTime: "", isReaded: false), status: Status(isStatusAvailable: false))
+    }
 }
 
+struct About {
+    let about: String
+    let lastUpdateAt: String
+}
 
-
-
-
-/// Data Object
-
+struct Status {
+    let isStatusAvailable: Bool
+    let statusCount: Int?
+    let isStatusViewed: Bool?
+    
+    init(isStatusAvailable: Bool, statusCount: Int? = nil, isStatusViewed: Bool? = nil) {
+        self.isStatusAvailable = isStatusAvailable
+        self.statusCount = statusCount
+        self.isStatusViewed = isStatusViewed
+    }
+}
